@@ -1,0 +1,207 @@
+@define-color allow #ffffff;
+@define-color block #00ff00;
+@define-color session #ffb300;
+@define-color block-session #ffff00;
+
+*
+{
+	outline-style:none;
+}
+
+window 
+{ 
+	border-image: none;
+        background-image:none;
+        background-color: white;
+}
+
+.menu label 
+{        
+	border-image: none;
+        background-image: none;
+        border-width: 0px;
+        box-shadow: none;
+        border-radius: 0;
+        margin: 0px;
+	font-family: Monospace;
+	font-size:17px;
+	font-weight: Bold;
+        padding: 0px 1px;
+}
+
+.menu #allow
+{
+	color:@allow;
+	background-color: rgba(0,0,0,0);
+}
+
+.menu #block
+{
+	color:@block;
+	background-color: rgba(0,0,0,0);
+}
+
+.menu #session
+{
+	color:@session;
+	background-color: rgba(0,0,0,0);
+}
+
+.menu #block-session
+{
+	color:@block-session;
+	background-color: rgba(0,0,0,0);
+}
+
+#button
+{        
+	font-family: Monospace;
+	font-size:19px;
+	font-weight: Bold;
+        border-image: none;
+        background-image:none;
+        background-color: #e2e2e1;
+        border-width: 0px;
+        box-shadow: none;
+        border-radius: 0;
+}
+
+#mnu
+{        
+	border: none;
+        border-width: 0px;
+        box-shadow: none;
+}
+
+#dialog
+{
+	background-image:none;
+        border-image: none;
+	font-size:15px;
+        border: solid;
+        border-color: rgb(207,1,0);
+        box-shadow: none;
+        margin: 17px 10px;
+        padding: 7px 10px;
+}
+
+            
+undershoot.top, .undershoot.bottom 
+{
+	background-image: none;
+}            
+ 
+#grid #allow,#grid #block,#grid #default,#grid #session,#grid #block-session,#grid #select,#grid #data
+{            
+	border-image: none;
+        background-image: none;
+        background-color: white;
+        box-shadow: none;
+        border-radius: 0;
+	font-family: Monospace;
+	font-size:17px;
+	font-weight: Bold;
+   	border-width: 0px 0px 1px 0px;
+        border-color: #eeeeec;
+	padding:0px 3px;
+	color:#4d4646;
+}
+
+
+#grid #data 
+{
+	font-family: Sans;
+	font-size:16px;
+	font-weight: 600;
+        background-color: #393f3e;
+        color: white;
+        border-color: #edeeee;
+        padding: 5px 0px;
+}
+
+#grid #allow
+{
+	background-color: @allow;
+	color:#4d4646;
+	border-color: white;
+}
+
+#grid #block
+{
+	background-color: @block;
+	color:white;
+	border-color: white;
+}
+
+#grid #default 
+{
+	background-color: #ff00ff;
+	color: white;
+	border-color: white;
+}
+
+#grid #session 
+{
+	background-color: @session;
+	color: white;
+	border-color: white;
+}
+
+#grid #block-session 
+{
+	background-color: @block-session; 
+	border-color: white;
+	color: white;
+}
+
+#grid #select
+{
+        border-style: none;
+        -gtk-icon-source: none;
+        outline-width: 0px;
+        color: white;
+        background-color: #00CCFF;
+        margin:0px;
+}
+
+#togglebutton 
+{
+	font-family: Monospace;
+	font-size:14px;
+	font-weight: Bold;
+	background-color: #e5266e;
+        color: white;
+        border-image: none;
+        background-image:none;
+        border-width: 0px;
+        box-shadow: none;
+        border-radius: 0;
+        margin: 0px;
+        padding: 6px 0px;
+}            
+
+#togglebutton:Checked
+{
+	background-color: #303030;
+}
+
+dialog #allow, dialog #block 
+{
+	font-family: Monospace;
+	font-size:15px;
+	font-weight: Bold;
+        border-image: none;
+        background-image:none;
+        text-shadow:none;
+        background-color: white;
+        border-width: 0px;
+        box-shadow: none;
+        border-radius: 0;
+        padding: 6px 10px;
+	margin: 0px 1px 0px 0px;
+}
+
+dialog #block 
+{
+	background-color: #00ff00;
+}
