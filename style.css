@@ -119,13 +119,6 @@ undershoot.top, .undershoot.bottom
         padding: 5px 0px;
 }
 
-#grid #allow
-{
-	background-color: @allow;
-	color:#4d4646;
-	border-color: white;
-}
-
 #grid #block
 {
 	background-color: @block;
