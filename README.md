@@ -17,3 +17,6 @@ When a process attempts to open a incoming or outgoing connection on the network
 <p>
 <img src="/screenshot.png" />
 </p>
+
+### Build ###
+requires libnetfilter_queue
