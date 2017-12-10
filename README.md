@@ -14,6 +14,4 @@ Application level firewall for blocking packets at network level includes suppor
 
 When a process attempts to open a incoming or outgoing connection on the network, the application will display a connection alert, allowing the user to allow or block the connection.
 
-### Screenshot ###
 
-![screenshot](/screenshot.png?raw=true "screenshot")
