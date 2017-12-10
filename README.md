@@ -1,5 +1,5 @@
 # sedna
-linux gtk network firewall 
+linux c gtk packet filtering firewall 
 
-filter tcp udp process domain ip port
+filter protocol process domain ip port 
 
