@@ -1,7 +1,7 @@
 # sedna
-linux c gtk packet filtering firewall 
+Linux c gtk packet filtering firewall 
 
-Application level firewall includes support for filtering packets by protocol, process, domain, ip, port 
+Application level firewall for blocking packets at network level includes support for filtering packets by protocol, process, domain, ip, port 
 
 For the application to receive queued packets from the kernel iptables rules need to be added, for example to filter incoming and outgoing udp packets from userspace application add the following iptables rules 
 
