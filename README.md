@@ -8,7 +8,7 @@ iptables -I OUTPUT -p udp  -j NFQUEUE -v
 
 iptables -I INPUT -p udp  -j NFQUEUE -v
 
-### Features ###
+## Features ##
 
 Application level firewall for blocking packets at network level includes support for filtering packets by protocol, process, domain, ip, port 
 
@@ -18,5 +18,5 @@ When a process attempts to open a incoming or outgoing connection on the network
 <img src="/screenshot.png" />
 </p>
 
-### Build ###
+## Build ##
 requires libnetfilter_queue
