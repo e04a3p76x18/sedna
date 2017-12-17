@@ -1,5 +1,5 @@
 # sedna
-Linux c gtk packet filtering firewall 
+Linux c gtk tcp udp packet filtering firewall 
 
 
 For the application to receive queued packets from the kernel iptables rules need to be added, for example to filter incoming and outgoing udp packets from userspace application add the following iptables rules 
