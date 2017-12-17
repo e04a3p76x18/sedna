@@ -1,5 +1,5 @@
 NAME=sedna
-CFLAGS=-g -Wall -o $(NAME)
+CFLAGS=-g -w -o $(NAME)
 GTKFLAGS= -lnfnetlink -lnetfilter_queue -std=c11 `pkg-config --cflags gtk+-3.0` `pkg-config --libs gtk+-3.0`
 SRCS=main.c
 CC=gcc
