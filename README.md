@@ -2,7 +2,7 @@
 Linux c gtk tcp udp packet filtering firewall 
 
 
-For the application to receive queued packets from the kernel iptables rules need to be added, for example to filter incoming and outgoing udp packets from userspace application add the following iptables rules 
+For the application to receive queued tcp or udp packets from the kernel iptables rules need to be added, for example to filter incoming and outgoing udp packets from userspace application add the following iptables rules 
 
 iptables -I OUTPUT -p udp  -j NFQUEUE -v
 
