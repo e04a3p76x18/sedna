@@ -271,7 +271,7 @@ char * get_property(struct rule * _this, int i, int serialize)
         case PID:
             return _this->process && _this->process[0] != '\0' ? _this->process : "*";
         case DOMAIN:
-            return _this->domain ? _this->domain : _this->ip[0] != '\0' ? _this->ip : "*"; 
+            return _this->domain ? _this->domain : _this->ip[0] != '\0' ? _this->ip : "*";
         case PORT:
             return _this->port && _this->port[0] == '\0' ? "*" : _this->port;
         case HASH:
@@ -485,18 +485,33 @@ static void buton_click(GtkWidget * button, gpointer data)
     }
 }
 
+void display(struct node * ptr, struct rule * object, struct app * view)
+{
+    gtk_grid_insert_row(GTK_GRID(view->grid), object->row);
+    print_rule(ptr, false, view->grid);
+}
+
+struct node * add_object(u_int8_t hook, char * hash, char * pid, char * domain, short authorize, unsigned short port, unsigned short sp, const char * protocol, char * ip, struct app * view)
+{ 
+    struct rule * object = constructor(hook, &hash[0], pid, domain, authorize, port, sp, protocol, ip);
+    struct node * ptr = insert(object, view->root);
+    if (ptr) {
+        return ptr;
+    }
+    if (object) { 
+        free(object);
+    }
+    return NULL;
+}
+
 static void add_click(GtkWidget * button, gpointer data)
 {
     struct app * view = (struct app *) data;
     const char * class = get_class_name(DEFAULT);
     if (data && view->root && view->grid && !find_row_class(view->root, view->grid, class)) {
-        struct rule * object = (struct rule *) calloc(1, sizeof (struct rule));
-        struct node * ptr = insert(object, view->root);
+        struct node * ptr = add_object(OUTGOING, NULL, NULL, NULL, DEFAULT, 0, 0, "*", NULL, view);
         if (ptr) {
-            gtk_grid_insert_row(GTK_GRID(view->grid), object->row);
-            print_rule(ptr, false, view->grid);
-        } else {
-            free(object);
+            display(ptr, ptr->rule, view);
         }
     }
 }
@@ -819,7 +834,7 @@ char * get_pid_name(char * search)
             char * fp = dir->d_name;
             struct dirent * dsp = NULL;
             char name[6 + strlen(fp) + 5];
-            snprintf(name, sizeof (name), "/proc/%s/fd/", fp);
+            snprintf(name, sizeof (name), "/proc/%s/fd/", fp); 
             DIR * spd = opendir(name);
             if (spd) {
                 while (((dsp = readdir(spd)) != NULL)) {
@@ -1048,6 +1063,122 @@ int get_inode(char * search, const char * file)
     return inode;
 }
 
+char * get_application(u_int8_t hook, struct iphdr * iph, unsigned short port, unsigned short sp)
+{
+    char addr[14];
+    snprintf(addr, 14, "%08x:%x", hook == INCOMING ? iph->daddr : iph->saddr, hook == INCOMING ? port : sp);
+    const char * file = get_proc_filename(iph->protocol);
+    int inode = get_inode(addr, file);
+    if (inode) {
+        int len = snprintf(NULL, 0, "%u", inode);
+        char sock[len + 10];
+        snprintf(sock, len + 10, "socket:[%u]", inode);
+        return get_pid_name(sock);
+    }
+    return NULL;
+}
+
+bool get_packet(unsigned short * port, unsigned int *ipd, unsigned short * sp, unsigned int * prctl, unsigned int * ipdlen, struct iphdr * iph, unsigned char * packet)
+{
+    bool connection = false;
+    switch (iph->protocol) {
+        case IPPROTO_TCP:
+        {
+            struct tcphdr * tcph = (struct tcphdr *) (packet + (iph->ihl * 4));
+            *port = ntohs(tcph->dest);
+            *sp = ntohs(tcph->source);
+            *prctl = tcph->doff * 4;
+            if ((tcph->syn == 1) && (tcph->ack == 0)) {
+                connection = true;
+            }
+            *ipdlen = (ntohs(iph->tot_len)) - (*ipd + *prctl);
+            break;
+        }
+        case IPPROTO_UDP:
+        {
+            struct udphdr * udph = (struct udphdr *) (packet + (iph->ihl * 4));
+            *port = ntohs(udph->dest);
+            *sp = ntohs(udph->source);
+            *prctl = sizeof (struct udphdr);
+            *ipdlen = ntohs(udph->len) - *prctl;
+            connection = true;
+            break;
+        }
+    }
+    return connection;
+}
+
+int get_response(struct app * view, char * program, int x, char * ip, u_int8_t hook, unsigned short port, unsigned short sp, char * hash, const char * protocol)
+{
+    int response = -4;
+    int sha = 0;
+    struct rule * object = find_rule(view, program, x, ip, hook, sp, port, &hash[0], &sha);
+    if (!object || sha) {
+        response = show_message_dialog(program, x != -1 ? view->cache->dns[x].name : "\0", hook, ip, protocol, sp, port, &sha);
+        if (sha) {
+            set_hash(object, &hash[0]);
+            set_authorization(object, response);
+            set_row_class(view->grid, object);
+        } else {
+            struct node * ptr = add_object(hook, &hash[0], program, x == -1 ? NULL : view->cache->dns[x].name, response, hook == 1 ? sp : port, hook == 1 ? port : sp, !protocol ? "*" : protocol, ip, view); 
+            if (ptr) {
+                display(ptr, ptr->rule, view);
+            }
+        }
+    } else {
+        response = object->authorize;
+    }
+    return response;
+}
+
+int parse_packet(u_int8_t hook, unsigned char * packet, struct app * view)
+{
+    int response=-4;
+    struct iphdr * iph = (struct iphdr *) packet;
+    bool connection = false;
+    unsigned short port = 0;
+    unsigned short sp = 0;
+    const char * protocol = protocol_to_str(iph->protocol);
+    unsigned int ipd = iph->ihl * 4;
+    unsigned int prctl;
+    unsigned int ipdlen;
+    char ip[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, hook == INCOMING ? &iph->saddr : &iph->daddr, ip, INET_ADDRSTRLEN);
+
+    connection = get_packet(&port, &ipd, &sp, &prctl, &ipdlen, iph, packet);
+
+    if (iph->protocol == IPPROTO_UDP) {
+        if (sp == 53 && iph->version == 4) {
+            parse_dns_reply(ipd, prctl, packet, (struct udphdr *) (packet + (iph->ihl * 4)), view);
+        }
+    }
+
+    if (connection) {
+        char * program = get_application(hook, iph, port, sp);
+        if (program) {
+            char hash[129];
+            get_file_hash(program, hash);
+            int x = find_domain(view->cache, ip); 
+            response = get_response(view,program, x, &ip[0], hook, port, sp, hash, protocol);
+            free(program);
+        }
+    } else {
+        response = SESSION;
+    }
+
+    if ((iph->protocol == IPPROTO_TCP && ((ntohs(iph->tot_len)) - (ipd + prctl)) > 0) || (iph->protocol == IPPROTO_UDP)) {
+        int x = 0;
+        unsigned char content[ipdlen];
+        while (*(packet + (ipd + prctl) + x) != 0 && x < ipdlen) {
+            content[x] = *(packet + (ipd + prctl) + x);
+            x++;
+        }
+        content[x] = '\0';
+        print_packet_data(hook == 1 ? port : sp, content, protocol, view->root, view->grid);
+    }
+    return response;
+}
+
 static int callback(struct nfq_q_handle * qh, struct nfgenmsg * nfmsg, struct nfq_data * nfa, void * data)
 {
     struct nfqnl_msg_packet_hdr * ph = nfq_get_msg_packet_hdr(nfa);
@@ -1057,100 +1188,11 @@ static int callback(struct nfq_q_handle * qh, struct nfgenmsg * nfmsg, struct nf
     int _data = nfq_get_payload(nfa, &packet);
     struct app * view = (struct app *) data;
     int response = -4;
-    
+
     if (_data > 0) {
-        struct iphdr * iph = (struct iphdr *) packet;
-        unsigned short connection = 0;
-        unsigned short port = 0;
-        unsigned short sp = 0;
-        const char * protocol = protocol_to_str(iph->protocol);
-        unsigned int ipd = iph->ihl * 4;
-        unsigned int prctl;
-        unsigned int ipdlen;
-        char ip[INET_ADDRSTRLEN];
-        inet_ntop(AF_INET, hook == INCOMING ? &iph->saddr : &iph->daddr, ip, INET_ADDRSTRLEN);
-
-        switch (iph->protocol) {
-            case IPPROTO_TCP:
-            {
-                struct tcphdr * tcph = (struct tcphdr *) (packet + (iph->ihl * 4));
-                port = ntohs(tcph->dest);
-                sp = ntohs(tcph->source);
-                prctl = tcph->doff * 4;
-                if ((tcph->syn == 1) && (tcph->ack == 0)) {
-                    connection = 1;
-                }
-                ipdlen = (ntohs(iph->tot_len)) - (ipd + prctl);
-                break;
-            }
-            case IPPROTO_UDP:
-            {
-                struct udphdr * udph = (struct udphdr *) (packet + (iph->ihl * 4));
-                port = ntohs(udph->dest);
-                sp = ntohs(udph->source);
-                prctl = sizeof (struct udphdr);
-                ipdlen = ntohs(udph->len) - prctl;
-                connection = 1;
-                if (sp == 53 && iph->version == 4) {
-                    parse_dns_reply(ipd, prctl, packet, udph, view);
-                }
-                break;
-            }
-        }
-
-        if (connection) {
-            char addr[14];
-            snprintf(addr, 14, "%08x:%x", hook == INCOMING ? iph->daddr : iph->saddr, hook == INCOMING ? port : sp);
-            const char * file = get_proc_filename(iph->protocol);
-            int inode = get_inode(addr, file);
-            if (inode) {
-                int len = snprintf(NULL, 0, "%u", inode);
-                char sock[len + 10];
-                snprintf(sock, len + 10, "socket:[%u]", inode);
-                char * program = get_pid_name(sock);
-                if (program) {
-                    char hash[129];
-                    get_file_hash(program, hash);
-                    int x = find_domain(view->cache, ip);
-                    int sha = 0;
-                    struct rule * object = find_rule(view, program, x, ip, hook, sp, port, &hash[0], &sha);
-                    if (!object || sha) {
-                        response = show_message_dialog(program, x != -1 ? view->cache->dns[x].name : "\0", hook, ip, protocol, sp, port, &sha);
-                        if (sha) {
-                            set_hash(object, &hash[0]);
-                            set_authorization(object, response);
-                            set_row_class(view->grid, object);
-                        } else {
-                            object = constructor(hook, &hash[0], program, x == -1 ? NULL : view->cache->dns[x].name, response, hook == 1 ? sp : port, hook == 1 ? port : sp, !protocol ? "*" : protocol, ip);
-                            struct node * ptr = insert(object, view->root->root);
-                            if (ptr) {
-                                gtk_grid_insert_row(GTK_GRID(view->grid), object->row);
-                                print_rule(ptr, false, view->grid);
-                            } else {
-                                free(object);
-                            }
-                        }
-                    } else {
-                        response = object->authorize;
-                    }
-                    free(program);
-                }
-            }
-        } else {
-            response = SESSION;
-        }
-
-        if ((iph->protocol == IPPROTO_TCP && ((ntohs(iph->tot_len)) - (ipd + prctl)) > 0) || (iph->protocol == IPPROTO_UDP)) {
-            int x = 0;
-            unsigned char content[ipdlen];
-            while (*(packet + (ipd + prctl) + x) != 0 && x < ipdlen) {
-                content[x] = *(packet + (ipd + prctl) + x);
-                x++;
-            }
-            content[x] = '\0';
-            print_packet_data(hook == 1 ? port : sp, content, protocol, view->root, view->grid);
-        }
+        response = parse_packet(hook, packet, view);
     }
+
     if (response == ALLOW || response == SESSION) {
         return nfq_set_verdict(qh, id, NF_ACCEPT, 0, NULL);
     } else {
@@ -1183,9 +1225,7 @@ int main(int argc, char **argv)
     if (!dns) {
         return -1;
     }
-    struct dnscache dnsche;
-    dnsche.dns = dns;
-    dnsche.count = 0;
+    struct dnscache dnsche = {.dns = dns, .count = 0};
 
     gtk_init(&argc, &argv);
 
@@ -1201,10 +1241,7 @@ int main(int argc, char **argv)
 
     GtkWidget * grid = GTK_WIDGET(gtk_builder_get_object(builder, "grid"));
 
-    struct app view;
-    view.root = root;
-    view.grid = grid;
-    view.cache = &dnsche;
+    struct app view = {.root = root, .grid = grid, .cache = &dnsche};
 
     GtkWidget * add = GTK_WIDGET(gtk_builder_get_object(builder, "add"));
     g_signal_connect(add, "clicked", G_CALLBACK(add_click), &view);
