@@ -22,4 +22,6 @@ When a process attempts to open a incoming or outgoing connection on the network
 requires libnetfilter_queue
 
 run as admin
+
 make
+./sedna
