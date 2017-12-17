@@ -24,4 +24,5 @@ requires libnetfilter_queue
 run as admin
 
 make
+
 ./sedna
