@@ -6,7 +6,8 @@ For the application to receive queued tcp or udp packets from the kernel iptable
 
 ```
 iptables -I OUTPUT -p udp  -j NFQUEUE -v
-
+```
+```
 iptables -I INPUT -p udp  -j NFQUEUE -v
 ```
 
