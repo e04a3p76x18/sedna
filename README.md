@@ -25,7 +25,6 @@ When a process attempts to open a incoming or outgoing connection on the network
 lib requirements 
 + libnetfilter_queue
 + libnetfilter_conntrack
-+ gtk 3
 
 to compile
 ```
