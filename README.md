@@ -15,7 +15,7 @@ iptables -I INPUT -p udp  -j NFQUEUE -v
 
 Application level firewall for blocking packets at network level includes support for filtering packets by protocol, process, domain, ip, port. 
 
-When a process attempts to open a incoming or outgoing connection on the network, the application will display a connection alert, allowing the user to allow or block the connection.
+Control all outgoing and incoming connections when a process attempts to open a network connection the application will display a connection alert allowing the user to allow or block the connection.
 
 <p>
 <img src="/screenshot.png" />
