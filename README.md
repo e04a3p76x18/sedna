@@ -30,6 +30,8 @@ to compile
 ```
 make
 ```
+run application
+
 ```
 ./sedna
 ```
