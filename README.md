@@ -22,7 +22,10 @@ When a process attempts to open a incoming or outgoing connection on the network
 </p>
 
 ## Build ##
-requires libnetfilter_queue
+lib requirements 
++ libnetfilter_queue
++ libnetfilter_conntrack
++ gtk 3
 
 to compile
 ```
