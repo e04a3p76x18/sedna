@@ -1135,7 +1135,6 @@ int parse_packet(u_int8_t hook, unsigned char * packet, struct app * view)
 {
     int response=-4;
     struct iphdr * iph = (struct iphdr *) packet;
-    bool connection = false;
     unsigned short port = 0;
     unsigned short sp = 0;
     const char * protocol = protocol_to_str(iph->protocol);
@@ -1145,7 +1144,7 @@ int parse_packet(u_int8_t hook, unsigned char * packet, struct app * view)
     char ip[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, hook == INCOMING ? &iph->saddr : &iph->daddr, ip, INET_ADDRSTRLEN);
 
-    connection = get_packet(&port, &ipd, &sp, &prctl, &ipdlen, iph, packet);
+    bool connection = get_packet(&port, &ipd, &sp, &prctl, &ipdlen, iph, packet);
 
     if (iph->protocol == IPPROTO_UDP) {
         if (sp == 53 && iph->version == 4) {
