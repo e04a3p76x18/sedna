@@ -1,15 +1,6 @@
 # sedna
 Linux c gtk tcp udp packet filtering firewall 
-
-
-For the application to receive queued tcp or udp packets from the kernel iptables rules need to be added, for example to control incoming and outgoing udp packets from userspace application add the following iptables rules 
-
-```
-iptables -I OUTPUT -p udp  -j NFQUEUE -v
-```
-```
-iptables -I INPUT -p udp  -j NFQUEUE -v
-```
+currently support tcp and udp packets ip4
 
 ## Features ##
 
@@ -34,6 +25,15 @@ to compile
 ```
 make
 ```
+For the application to receive queued tcp or udp packets from the kernel iptables rules need to be added for example to control incoming and outgoing udp packets from userspace application add the following iptables rules
+
+```
+iptables -I OUTPUT -p udp  -j NFQUEUE -v
+```
+```
+iptables -I INPUT -p udp  -j NFQUEUE -v
+```
+
 run application - requires admin permissions to run
 
 ```
