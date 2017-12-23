@@ -23,8 +23,8 @@ When a process attempts to open a incoming or outgoing connection on the network
 
 ## Build ##
 lib requirements 
-+ libnetfilter_queue
-+ libnetfilter_conntrack
+libnetfilter_queue
+libnetfilter_conntrack
 
 to compile
 ```
