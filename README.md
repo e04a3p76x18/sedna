@@ -24,7 +24,9 @@ When a process attempts to open a incoming or outgoing connection on the network
 ## Build ##
 requires libnetfilter_queue
 
-run as admin
+requires admin permissions to run
+
+to compile
 ```
 make
 ```
