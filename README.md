@@ -24,13 +24,11 @@ When a process attempts to open a incoming or outgoing connection on the network
 ## Build ##
 requires libnetfilter_queue
 
-requires admin permissions to run
-
 to compile
 ```
 make
 ```
-run application
+run application - requires admin permissions to run
 
 ```
 ./sedna
