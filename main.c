@@ -718,9 +718,9 @@ unsigned char * get_domain(unsigned char * reply, unsigned char * buf, int * ind
     return domain;
 }
 
-const char * get_proc_filename(int x)
+const char * get_proc_filename(int p)
 {
-    switch (x) {
+    switch (p) {
         case IPPROTO_TCP: return "/proc/net/tcp";
         case IPPROTO_UDP: return "/proc/net/udp";
         default: NULL;
