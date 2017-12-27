@@ -1,5 +1,6 @@
 # sedna
 Linux c gtk tcp udp packet filtering firewall 
+
 currently support ip4 tcp and udp packets 
 
 ## Features ##
@@ -19,7 +20,7 @@ libnetfilter_queue
 
 libnetfilter_conntrack
 
-download code
+download all files
 
 to compile
 ```
