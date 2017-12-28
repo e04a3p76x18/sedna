@@ -1,7 +1,7 @@
 # sedna
-Linux c gtk tcp udp packet filtering firewall 
+Linux c gtk packet filtering firewall 
 
-currently support ip4 tcp and udp packets 
+currently support filtering ip4 level tcp and udp packets 
 
 ## Features ##
 
