@@ -980,7 +980,7 @@ int find_domain(struct dnscache * cache, char * ip)
 int show_message_dialog(char * pid, char * domain, int hook, char * ip, const char * protocol, int sp, int port, int * sha)
 {
     int response = BLOCKSESN;
-    int len = 112 + (pid ? strlen(pid) : 1) + strlen(domain) + INET_ADDRSTRLEN;
+    int len = 128 + (pid ? strlen(pid) : 1) + strlen(domain) + INET_ADDRSTRLEN;
     char str[len];
     snprintf(str, len, "process %s is trying to open %s %s connection to %s %s %u %s", pid ? pid : "*", hook == INCOMING ? "incoming" : "outgoing", protocol ? protocol : "*", domain, ip, hook == 1 ? sp : port, *sha ? "\n warning application binary has been modified" : "");
     GtkBuilder * builder = gtk_builder_new();
