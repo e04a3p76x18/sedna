@@ -9,6 +9,8 @@ Application level firewall for blocking packets at network level includes suppor
 
 Control all outgoing and incoming connections when a process attempts to open a network connection the application will display a connection alert allowing the user to allow or block the request.
 
+uses netfilter to get queued packets from Linux kernel  
+
 <p>
 <img src="/screenshot.png" />
 </p>
