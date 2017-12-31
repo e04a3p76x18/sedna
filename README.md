@@ -5,16 +5,16 @@ currently support filtering ip4 level tcp and udp packets
 
 ## Features ##
 
-Application level firewall for blocking packets at network level includes support for filtering packets by protocol, process, domain, ip, port. 
+application level firewall for blocking packets at network level includes support for filtering packets by protocol, process, domain, ip, port. 
 
-Control all outgoing and incoming connections when a process attempts to open a network connection the application will display a connection alert allowing the user to allow or block the request.
+control all outgoing and incoming connections when a process attempts to open a network connection the application will display a connection alert allowing the user to allow or block the request.
 
 uses netfilter to get queued packets from Linux kernel  
 
 <p>
 <img src="/screenshot.png" />
 </p>
-example rule - always block all tcp firefox outgoing connections to api.googleapi.com on all port numbers
+example rule - firefox process always block all tcp outgoing connections to api.googleapi.com on all port numbers
 
 ## Build ##
 requirements
@@ -23,9 +23,11 @@ libnetfilter_queue
 
 libnetfilter_conntrack
 
+gtk3
+
 download all files
 
-to compile
+compile code
 ```
 make
 ```
