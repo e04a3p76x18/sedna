@@ -14,9 +14,7 @@ uses netfilter to get queued packets from Linux kernel
 <p>
 <img src="/screenshot.png" />
 </p>
-example rule 
-
-always block all tcp firefox outgoing connections to api.googleapi.com on all port numbers
+example rule - always block all tcp firefox outgoing connections to api.googleapi.com on all port numbers
 
 ## Build ##
 requirements
