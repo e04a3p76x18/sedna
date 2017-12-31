@@ -20,6 +20,7 @@ always block all tcp firefox outgoing connections to api.googleapi.com on all po
 requirements
 
 libnetfilter_queue
+
 libnetfilter_conntrack
 
 download all files
