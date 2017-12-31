@@ -12,6 +12,9 @@ Control all outgoing and incoming connections when a process attempts to open a 
 <p>
 <img src="/screenshot.png" />
 </p>
+example rule 
+
+always block all tcp firefox outgoing connections to api.googleapi.com on all port numbers
 
 ## Build ##
 requirements
